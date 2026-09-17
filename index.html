@@ -66,7 +66,7 @@
         <!-- PANEL 1: INPUT DATA (LEFT) -->
         <aside class="w-[45%] bg-white border-r border-slate-200 overflow-y-auto custom-scrollbar p-8 no-print">
             
-            <!-- API KEY SECTION WITH SAVE BUTTON -->
+            <!-- API KEY SECTION -->
             <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
                 <div class="flex justify-between items-center mb-2">
                     <label class="block text-xs font-bold text-amber-800 uppercase tracking-wider">
@@ -96,10 +96,27 @@
             </div>
 
             <form id="rppForm" class="space-y-6">
+                <!-- Identitas Sekolah & Guru -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Nama Sekolah / Satuan Pendidikan <span class="text-red-500">*</span></label>
+                    <input type="text" id="namaSekolah" required placeholder="Contoh: SDN Kaliasin VII/287" class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Nama Guru Penyusun <span class="text-red-500">*</span></label>
+                        <input type="text" id="namaGuru" required placeholder="Contoh: Ardiyatna Pranata, S.Pd." class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">NIP Guru <span class="text-slate-400 font-normal">(Opsional)</span></label>
+                        <input type="text" id="nipGuru" placeholder="Contoh: 19850101..." class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm outline-none">
+                    </div>
+                </div>
+
                 <!-- 1. Jenjang -->
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">1. Jenjang Pendidikan <span class="text-red-500">*</span></label>
-                    <select id="jenjang" required class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 outline-none">
+                    <select id="jenjang" required class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm outline-none">
                         <option value="" selected disabled>Pilih Jenjang Pendidikan...</option>
                         <option value="TK">TK</option>
                         <option value="SD/MI">SD/MI</option>
@@ -229,7 +246,7 @@
                         </svg>
                     </div>
                     <h3 class="text-2xl font-bold text-slate-800 mb-4">RPP AI Generator Terhubung</h3>
-                    <p class="text-slate-500 mb-8 leading-relaxed">Simpan API Key Anda di sebelah kiri, lalu isi form konfigurasi untuk merancang RPP secara cerdas.</p>
+                    <p class="text-slate-500 mb-8 leading-relaxed">Simpan API Key, lalu lengkapi form konfigurasi di sebelah kiri untuk merancang Dokumen RPP Deep Learning yang sangat lengkap dan detail.</p>
                 </div>
             </div>
 
@@ -278,13 +295,11 @@
         const btnSaveApiKey = document.getElementById('btnSaveApiKey');
         const apiKeyStatus = document.getElementById('apiKeyStatus');
 
-        // --- MANAJEMEN PENYIMPANAN API KEY DI BROWSER ---
         function checkSavedApiKey() {
             const savedKey = localStorage.getItem('gemini_rpp_api_key');
             if (savedKey) {
                 apiKeyInput.value = savedKey;
-                apiKeyStatus.innerHTML = `<span class="text-emerald-600 font-bold">✓ API Key aktif tersimpan di browser ini.</span> <button type="button" id="btnClearKey" class="text-red-500 hover:underline ml-2">Hapus</button>`;
-                
+                apiKeyStatus.innerHTML = `<span class="text-emerald-600 font-bold">✓ API Key aktif tersimpan.</span> <button type="button" id="btnClearKey" class="text-red-500 hover:underline ml-2">Hapus</button>`;
                 document.getElementById('btnClearKey').addEventListener('click', () => {
                     localStorage.removeItem('gemini_rpp_api_key');
                     apiKeyInput.value = '';
@@ -297,18 +312,14 @@
 
         btnSaveApiKey.addEventListener('click', () => {
             const key = apiKeyInput.value.trim();
-            if (!key) {
-                alert("Masukkan API Key terlebih dahulu sebelum menyimpan!");
-                return;
-            }
+            if (!key) { alert("Masukkan API Key terlebih dahulu!"); return; }
             localStorage.setItem('gemini_rpp_api_key', key);
             checkSavedApiKey();
-            alert("API Key berhasil disimpan di browser perangkat ini!");
+            alert("API Key berhasil disimpan!");
         });
 
         checkSavedApiKey();
 
-        // Init Checkboxes Profil
         DIMENSI_LIST.forEach((d, i) => {
             const div = document.createElement('div');
             div.innerHTML = `<input type="checkbox" id="dim-${i}" class="pill-checkbox hidden" value="${d}">
@@ -344,18 +355,18 @@
             document.getElementById('subAsesmen').classList.toggle('hidden', !e.target.checked);
         });
 
-        // --- GENERATE RPP VIA API ---
+        // --- GENERATE RPP VIA API DENGAN STRUKTUR LENGKAP & DETAIL ---
         document.getElementById('btnGenerate').addEventListener('click', async () => {
             const form = document.getElementById('rppForm');
             if(!form.reportValidity()) return;
 
             const apiKey = apiKeyInput.value.trim();
-            if(!apiKey) {
-                alert("Masukkan dan Simpan API Key terlebih dahulu!");
-                return;
-            }
+            if(!apiKey) { alert("Masukkan dan Simpan API Key terlebih dahulu!"); return; }
 
             const data = {
+                namaSekolah: document.getElementById('namaSekolah').value,
+                namaGuru: document.getElementById('namaGuru').value,
+                nipGuru: document.getElementById('nipGuru').value || "-",
                 jenjang: jenjangEl.value,
                 kelas: kelasEl.value,
                 fase: faseEl.value,
@@ -376,43 +387,72 @@
 
             const btn = document.getElementById('btnGenerate');
             const originalBtnHtml = btn.innerHTML;
-            btn.innerHTML = '<div class="loader"></div> MENYUSUN RPP DENGAN AI...';
+            btn.innerHTML = '<div class="loader"></div> MENYUSUN RPP LENGKAP DENGAN AI...';
             btn.disabled = true;
 
-            const prompt = `Anda adalah pakar pembuat RPP/Modul Ajar Kurikulum Merdeka. 
-            Buatkan dokumen RPP dalam format HTML mentah (raw HTML) berdasarkan data form berikut:
+            const prompt = `Anda adalah seorang pakar penyusun Kurikulum Merdeka dan Pendidik profesional. 
+            Buatkan dokumen Rencana Pelaksanaan Pembelajaran (RPP) / Modul Ajar Deep Learning yang **SANGAT LENGKAP, UTUH, DAN DETAIL** dalam format HTML mentah (raw HTML) berdasarkan data berikut:
             ${JSON.stringify(data)}
             
-            ATURAN SANGAT PENTING:
-            1. Output WAJIB berformat kode tag HTML saja, tanpa text awalan, dan TANPA dibungkus markdown \`\`\`html. Langsung berikan tag <div> atau <section>.
-            2. Gunakan inline style sederhana atau class Tailwind CSS (seperti text-center, font-bold, grid, text-sm, mt-4, dll) agar desainnya rapi.
-            3. STRUKTUR RPP WAJIB:
-               - Kop (Header RPP): Identitas sekolah, mapel, kelas, dll.
-               - A. Identifikasi (Karakteristik, Profil Lulusan).
-               - B. Desain Pembelajaran (Tujuan, Lingkungan).
-               - C. Pengalaman Belajar (Skenario rinci Pendahuluan, Inti, Penutup. Karena diminta ${data.jmlPertemuan} pertemuan, jabarkan langkah pertemuan 1 sampai ${data.jmlPertemuan} secara terpisah dan detail!).
-               - D. Asesmen (Sebutkan formatif & sumatif, buatkan contoh 3 butir soal PG dan 2 Uraian jika dicentang, beserta kunci jawaban dan rubrik skala 1-4).
-               - Tanda tangan guru & kepsek di bagian bawah.
-               - Lampiran LKPD: Buatkan 1 Lembar Kerja yang relevan dengan topik "${data.topik}".
-            4. Buat bahasanya profesional, pedagogik, terstruktur, dan masuk akal untuk diajarkan.`;
+            ATURAN STRUKTUR & KELENGKAPAN OUTPUT:
+            1. Output WAJIB berupa tag HTML mentah saja (tanpa text pengantar, dan TANPA dibungkus markdown \`\`\`html). Langsung mulai dengan tag kontainer <div> atau <article>.
+            2. Gunakan styling class Tailwind CSS atau inline style yang rapi, profesional, dan bersih.
+            3. STRUKTUR DOKUMEN RPP WAJIB MEMUAT:
+               - **Header Dokumen:** Judul resmi Rencana Pelaksanaan Pembelajaran (RPP) Kurikulum Merdeka, cantumkan Nama Sekolah: "${data.namaSekolah}", Jenjang: "${data.jenjang}", Kelas/Fase: "${data.kelas} / ${data.fase}", Mata Pelajaran: "${data.mapel}", Semester: "${data.semester}", Alokasi Waktu: "${data.jmlPertemuan} Pertemuan x ${data.jp}".
+               - **A. IDENTIFIKASI:** 
+                 1. Karakteristik Peserta Didik (Uraikan mendalam berdasarkan input: "${data.karakteristik}").
+                 2. Analisis Mata Pelajaran & Topik "${data.topik}".
+                 3. Dimensi Profil Lulusan yang dipilih: "${data.dimensi}".
+               - **B. DESAIN PEMBELAJARAN:** 
+                 1. Tujuan Pembelajaran (TP) yang diturunkan dari Capaian Pembelajaran: "${data.cp}".
+                 2. Praktik Pedagogis (Sintaks model pembelajaran "${data.model}").
+                 3. Lingkungan Belajar dan Kemitraan Digital.
+               - **C. PENGALAMAN BELAJAR (SKENARIO PERTEMUAN):** 
+                 - Jabarkan secara rinci dari Pertemuan 1 sampai Pertemuan ${data.jmlPertemuan}.
+                 - Setiap pertemuan wajib memuat: 
+                   * Pendahuluan (Apersepsi, Pertanyaan Pemantik, Motivasi).
+                   * Kegiatan Inti (Penerapan sintaks model "${data.model}" terintegrasi fase Deep Learning: Eksplorasi, Elaborasi/Deepening, Konfirmasi/Applying).
+                   * Penutup (Refleksi pembelajaran, kesimpulan, penugasan).
+               - **D. ASESMEN & LAMPIRAN:**
+                 1. Rincian Asesmen Formatif ("${data.formatif}") dan Sumatif ("${data.sumatif}").
+                 2. Jika Tes Tertulis dicentang, buatkan contoh soal Pilihan Ganda dan/atau Uraian lengkap dengan kunci jawaban.
+                 3. Rubrik Penilaian Kualitas (Skala 1 - 4).
+                 4. Lampiran Lembar Kerja Peserta Didik (LKPD) lengkap untuk setiap pertemuan beserta instruksi kerja dan tabel pengamatan.
+               - **Tanda Tangan Pengesahan di Bagian Bawah:** Sediakan tempat tanda tangan Kepala Sekolah dan Guru Penyusun yang mencantumkan nama asli **"${data.namaGuru}"** beserta NIP **"${data.nipGuru}"**.
+            4. Gunakan bahasa Indonesia yang baik, benar, baku, edukatif, dan sangat profesional.`;
+
+            const modelsList = ['gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest'];
+            let response = null;
+            let resultData = null;
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }],
-                        generationConfig: { temperature: 0.6 }
-                    })
-                });
+                for (let i = 0; i < modelsList.length; i++) {
+                    const currentModel = modelsList[i];
+                    try {
+                        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${apiKey}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                contents: [{ parts: [{ text: prompt }] }],
+                                generationConfig: { temperature: 0.6 }
+                            })
+                        });
 
-                if(!response.ok) {
-                    const errRes = await response.json();
-                    throw new Error(errRes.error?.message || "Gagal menghubungi server Gemini. Periksa kembali API Key Anda.");
+                        if (res.ok) {
+                            response = res;
+                            resultData = await res.json();
+                            break;
+                        }
+                    } catch (innerErr) {
+                        console.warn(`Model ${currentModel} gagal, mencoba model alternatif...`);
+                    }
                 }
 
-                const result = await response.json();
-                let aiHtml = result.candidates[0].content.parts[0].text;
+                if (!response || !resultData) {
+                    throw new Error("Semua model Gemini gagal diakses. Periksa kembali API Key Anda.");
+                }
+
+                let aiHtml = resultData.candidates[0].content.parts[0].text;
                 aiHtml = aiHtml.replace(/```html/g, '').replace(/```/g, ''); 
 
                 document.getElementById('rpp-document').innerHTML = aiHtml;
