@@ -38,12 +38,18 @@
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Modal Styles */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+        }
     </style>
 </head>
 <body class="h-screen overflow-hidden flex flex-col">
 
     <!-- Header Navigation -->
-    <header class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center no-print">
+    <header class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center no-print z-20">
         <div class="flex items-center gap-3">
             <div class="bg-blue-600 p-2 rounded-lg shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -64,7 +70,7 @@
 
     <main class="flex-1 flex overflow-hidden">
         <!-- PANEL 1: INPUT DATA (LEFT) -->
-        <aside class="w-[45%] bg-white border-r border-slate-200 overflow-y-auto custom-scrollbar p-8 no-print">
+        <aside class="w-[45%] bg-white border-r border-slate-200 overflow-y-auto custom-scrollbar p-8 no-print relative">
             
             <!-- API KEY SECTION -->
             <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
@@ -155,8 +161,19 @@
                 </div>
 
                 <div>
-                    <label class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 block">6. Capaian Pembelajaran (CP) <span class="text-red-500">*</span></label>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-xs font-bold text-slate-700 uppercase tracking-wider block">6. Capaian Pembelajaran (CP) <span class="text-red-500">*</span></label>
+                        <div class="flex gap-3">
+                            <a href="https://guru.kemendikdasmen.go.id/kurikulum/referensi-penerapan/capaian-pembelajaran/" target="_blank" class="text-[10px] text-blue-500 hover:underline">Referensi CP</a>
+                            <a href="https://guru.kemendikdasmen.go.id/kurikulum/referensi-penerapan/capaian-pembelajaran/inspirasi-atp/" target="_blank" class="text-[10px] text-emerald-600 font-bold hover:underline">Inspirasi ATP ✨</a>
+                        </div>
+                    </div>
                     <textarea id="cp" required placeholder="Salin/ketik Capaian Pembelajaran (CP)..." class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm min-h-[80px] outline-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Tujuan Pembelajaran (TP) <span class="text-red-500">*</span></label>
+                    <textarea id="tp" required placeholder="Contoh: Peserta didik mampu menganalisis mekanisme pencernaan..." class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm min-h-[60px] outline-none"></textarea>
                 </div>
 
                 <div>
@@ -164,16 +181,63 @@
                     <input type="text" id="topik" required placeholder="Contoh: Sistem Pencernaan Manusia" class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm outline-none">
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">8. Karakteristik Peserta Didik <span class="text-red-500">*</span></label>
-                    <textarea id="karakteristik" required placeholder="Contoh: Gaya belajar visual, aktif bergerak..." class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm min-h-[60px] outline-none"></textarea>
+                <!-- 8. Karakteristik Peserta Didik (REVISI: Berupa Pilihan) -->
+                <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+                    <label class="block text-[10px] font-black text-indigo-700 uppercase tracking-widest mb-4">8. Karakteristik Peserta Didik <span class="text-indigo-400 font-normal">(Boleh pilih lebih dari satu)</span></label>
+                    
+                    <div class="space-y-4">
+                        <!-- Fisiologis -->
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-500 mb-2 border-b border-indigo-200 pb-1">FISIOLOGIS & MOTORIK</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-2">
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="karakteristik" value="Usia & Tahap Perkembangan" class="mt-1"> Usia & Tahap Perkembangan</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="karakteristik" value="Kesehatan Fisik & Kelelahan" class="mt-1"> Kesehatan Fisik & Kelelahan</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="karakteristik" value="Kemampuan Motorik Halus/Kasar" class="mt-1"> Kemampuan Motorik</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="karakteristik" value="Kebutuhan Khusus / Disabilitas" class="mt-1"> Kebutuhan Khusus (Disabilitas)</label>
+                            </div>
+                        </div>
+
+                        <!-- Kognitif -->
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-500 mb-2 border-b border-indigo-200 pb-1">KOGNITIF & AKADEMIK</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-2">
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="karakteristik" value="Kemampuan Awal (Prior Knowledge)" class="mt-1"> Kemampuan Awal (Prior Knowledge)</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="karakteristik" value="Gaya Kognitif" class="mt-1"> Gaya Kognitif</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="karakteristik" value="Kecerdasan & Bakat Khusus" class="mt-1"> Kecerdasan & Bakat Khusus</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="karakteristik" value="Gangguan Belajar (Learning Difficulties)" class="mt-1"> Gangguan Belajar (Learning Difficulties)</label>
+                            </div>
+                        </div>
+
+                        <!-- Psikologis -->
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-500 mb-2 border-b border-indigo-200 pb-1">PSIKOLOGIS & SOSIO-EMOSIONAL</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-2">
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="karakteristik" value="Gaya Belajar (Visual/Auditori/Kinestetik)" class="mt-1"> Gaya Belajar (Visual/Auditori/Kinestetik)</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="karakteristik" value="Motivasi Belajar" class="mt-1"> Motivasi Belajar</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="karakteristik" value="Efikasi Diri (Self-Efficacy)" class="mt-1"> Efikasi Diri</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="karakteristik" value="Minat & Hobi" class="mt-1"> Minat & Hobi</label>
+                            </div>
+                        </div>
+
+                        <!-- Sosio Kultural -->
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-500 mb-2 border-b border-indigo-200 pb-1">SOSIO-KULTURAL & LATAR BELAKANG</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-2">
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="karakteristik" value="Etnis & Budaya" class="mt-1"> Etnis & Budaya</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="karakteristik" value="Status Sosial Ekonomi (SES)" class="mt-1"> Status Sosial Ekonomi</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="karakteristik" value="Bahasa Utama" class="mt-1"> Bahasa Utama</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="karakteristik" value="Nilai & Keyakinan" class="mt-1"> Nilai & Keyakinan</label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div>
                     <div class="flex justify-between items-center mb-2">
-                        <label class="text-xs font-bold text-slate-700 uppercase tracking-wider">9. Profil Lulusan <span class="text-slate-400 font-normal">(Maks. 3)</span></label>
+                        <label class="text-xs font-bold text-slate-700 uppercase tracking-wider">9. Dimensi Profil Lulusan <span class="text-slate-400 font-normal">(Maks. 3)</span></label>
                         <span id="dimensi-count" class="text-[10px] font-bold text-slate-500">Dipilih: 0/3</span>
                     </div>
+                    <p class="text-[10px] text-blue-500 mb-2 italic">*Klik nama dimensi untuk melihat penjelasan.</p>
                     <div class="flex flex-wrap gap-2" id="dimensi-container"></div>
                 </div>
 
@@ -190,39 +254,160 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">12. Model Pembelajaran <span class="text-red-500">*</span></label>
-                    <select id="modelBelajar" required class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm outline-none mb-2">
+                    <select id="modelBelajar" required class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-[13px] outline-none mb-2 font-medium">
                         <option value="" selected disabled>Pilih Model Pembelajaran...</option>
-                        <option value="Problem Based Learning">Problem Based Learning</option>
-                        <option value="Project Based Learning">Project Based Learning</option>
-                        <option value="Inquiry Learning">Inquiry Learning</option>
-                        <option value="Discovery Learning">Discovery Learning</option>
+                        <optgroup label="Berbasis Masalah & Proyek (Active Learning)">
+                            <option value="Problem-Based Learning (PBL)">Problem-Based Learning (PBL)</option>
+                            <option value="Project-Based Learning (PjBL)">Project-Based Learning (PjBL)</option>
+                            <option value="Inquiry-Based Learning">Inquiry-Based Learning</option>
+                            <option value="Discovery Learning">Discovery Learning</option>
+                        </optgroup>
+                        <optgroup label="Kooperatif (Cooperative Learning)">
+                            <option value="Jigsaw">Jigsaw</option>
+                            <option value="Numbered Heads Together (NHT)">Numbered Heads Together (NHT)</option>
+                            <option value="Think-Pair-Share (TPS)">Think-Pair-Share (TPS)</option>
+                            <option value="Student Teams Achievement Divisions (STAD)">STAD</option>
+                            <option value="Team Games Tournament (TGT)">Team Games Tournament (TGT)</option>
+                        </optgroup>
+                        <optgroup label="Kontekstual & Humanis">
+                            <option value="Contextual Teaching and Learning (CTL)">Contextual Teaching and Learning (CTL)</option>
+                            <option value="Experiential Learning">Experiential Learning</option>
+                            <option value="Quantum Learning">Quantum Learning</option>
+                        </optgroup>
+                        <optgroup label="Modern & Digital">
+                            <option value="Flipped Classroom">Flipped Classroom</option>
+                            <option value="Blended Learning">Blended Learning</option>
+                            <option value="Game-Based Learning">Game-Based Learning</option>
+                        </optgroup>
+                        <optgroup label="Langsung & Terstruktur">
+                            <option value="Direct Instruction">Direct Instruction</option>
+                            <option value="Explicit Instruction">Explicit Instruction</option>
+                        </optgroup>
                         <option value="Lainnya">Lainnya...</option>
                     </select>
                     <input type="text" id="modelLainnya" placeholder="Ketik model lainnya..." class="hidden w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm outline-none">
                 </div>
 
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">Jenis Asesmen</label>
-                    <div class="grid grid-cols-2 gap-6">
+                <!-- 13. Strategi Pembelajaran (REVISI: Berupa Pilihan Checkbox Maks 3) -->
+                <div class="bg-amber-50 p-4 rounded-xl border border-amber-100">
+                    <div class="flex justify-between items-center mb-4">
+                        <label class="text-[10px] font-black text-amber-700 uppercase tracking-widest">13. Strategi Pembelajaran <span class="text-amber-500 font-normal">(Maks. 3)</span></label>
+                        <span id="strategi-count" class="text-[10px] font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded">Dipilih: 0/3</span>
+                    </div>
+                    
+                    <div class="space-y-4" id="strategi-container">
+                        
+                        <!-- Langsung -->
                         <div>
-                            <p class="text-[10px] font-bold text-slate-400 mb-2">FORMATIF</p>
-                            <div class="space-y-2">
-                                <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="formatif" value="Pretest"> Pretest</label>
-                                <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="formatif" value="Kuis"> Kuis</label>
-                                <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="formatif" value="Observasi"> Observasi</label>
+                            <p class="text-xs font-bold text-slate-800 border-b border-amber-200 pb-1 mb-2">1. Langsung (Direct Instruction)</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-2">
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Ceramah Terstruktur" class="str-checkbox mt-1"> Ceramah Terstruktur</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Demonstrasi" class="str-checkbox mt-1"> Demonstrasi</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Pemberian Tugas dan Resitasi" class="str-checkbox mt-1"> Pemberian Tugas & Resitasi</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Pengajaran Eksplisit" class="str-checkbox mt-1"> Pengajaran Eksplisit</label>
                             </div>
                         </div>
+
+                        <!-- Tidak Langsung -->
                         <div>
-                            <p class="text-[10px] font-bold text-slate-400 mb-2">SUMATIF</p>
+                            <p class="text-xs font-bold text-slate-800 border-b border-amber-200 pb-1 mb-2 mt-4">2. Tidak Langsung (Indirect Instruction)</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-2">
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Inkuiri (Inquiry)" class="str-checkbox mt-1"> Inkuiri (Inquiry)</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Pemecahan Masalah" class="str-checkbox mt-1"> Pemecahan Masalah</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Pembentukan Konsep" class="str-checkbox mt-1"> Pembentukan Konsep</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Refleksi" class="str-checkbox mt-1"> Refleksi (Reflective Writing)</label>
+                            </div>
+                        </div>
+
+                        <!-- Interaktif -->
+                        <div>
+                            <p class="text-xs font-bold text-slate-800 border-b border-amber-200 pb-1 mb-2 mt-4">3. Interaktif (Interactive Instruction)</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-2">
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Diskusi Kelas/Kelompok" class="str-checkbox mt-1"> Diskusi Kelas/Kelompok</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Debat" class="str-checkbox mt-1"> Debat</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Curah Pendapat (Brainstorming)" class="str-checkbox mt-1"> Curah Pendapat</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Bermain Peran (Role Playing)" class="str-checkbox mt-1"> Bermain Peran</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Tutoring Sebaya" class="str-checkbox mt-1"> Tutoring Sebaya</label>
+                            </div>
+                        </div>
+
+                        <!-- Pengalaman -->
+                        <div>
+                            <p class="text-xs font-bold text-slate-800 border-b border-amber-200 pb-1 mb-2 mt-4">4. Melalui Pengalaman (Experiential)</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-2">
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Eksperimen / Praktikum" class="str-checkbox mt-1"> Eksperimen / Praktikum</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Simulasi" class="str-checkbox mt-1"> Simulasi</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Kunjungan Lapangan" class="str-checkbox mt-1"> Kunjungan Lapangan</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Gim/Permainan Edukatif" class="str-checkbox mt-1"> Gim/Permainan Edukatif</label>
+                            </div>
+                        </div>
+
+                        <!-- Mandiri -->
+                        <div>
+                            <p class="text-xs font-bold text-slate-800 border-b border-amber-200 pb-1 mb-2 mt-4">5. Mandiri (Independent Study)</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-2">
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Modul Pembelajaran Mandiri" class="str-checkbox mt-1"> Modul Mandiri</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Tugas Proyek Mandiri" class="str-checkbox mt-1"> Proyek Mandiri</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="E-Learning" class="str-checkbox mt-1"> E-Learning / LMS</label>
+                                <label class="flex items-start gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="strategi" value="Kontrak Belajar" class="str-checkbox mt-1"> Kontrak Belajar</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">14. Strategi Asesmen</label>
+                    <div class="space-y-6">
+                        
+                        <!-- Diagnostik -->
+                        <div>
+                            <p class="text-xs font-bold text-indigo-700 mb-2 border-b border-slate-200 pb-1">A. Diagnostik & Penempatan (Awal)</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="asesmen" value="Pre-test"> Pre-test</label>
+                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="asesmen" value="Tes Diagnostik Kognitif"> Diagnostik Kognitif</label>
+                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="asesmen" value="Tes Diagnostik Non-Kognitif"> Diagnostik Non-Kognitif</label>
+                            </div>
+                        </div>
+
+                        <!-- Formatif -->
+                        <div>
+                            <p class="text-xs font-bold text-blue-700 mb-2 border-b border-slate-200 pb-1">B. Formatif (Selama Proses)</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="asesmen" value="Kuis Singkat (Pop Quiz)"> Kuis Singkat</label>
+                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="asesmen" value="Observasi Kelas"> Observasi Kelas</label>
+                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="asesmen" value="Tiket Keluar (Exit Ticket)"> Tiket Keluar</label>
+                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="asesmen" value="Pertanyaan Pemantik"> Pertanyaan Pemantik</label>
+                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="asesmen" value="Jurnal Refleksi"> Jurnal Refleksi</label>
+                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="asesmen" value="Penilaian Diri & Antarteman"> Self/Peer Assessment</label>
+                            </div>
+                        </div>
+
+                        <!-- Kinerja -->
+                        <div>
+                            <p class="text-xs font-bold text-emerald-700 mb-2 border-b border-slate-200 pb-1">C. Kinerja & Autentik</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="asesmen" value="Asesmen Proyek"> Asesmen Proyek</label>
+                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="asesmen" value="Unjuk Kerja / Praktik"> Unjuk Kerja/Praktik</label>
+                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="asesmen" value="Portofolio"> Portofolio</label>
+                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="asesmen" value="Produk"> Penilaian Produk</label>
+                            </div>
+                        </div>
+
+                        <!-- Sumatif / Tertulis -->
+                        <div>
+                            <p class="text-xs font-bold text-rose-700 mb-2 border-b border-slate-200 pb-1">D. Tradisional / Tertulis (Umumnya Sumatif)</p>
                             <div class="space-y-2">
-                                <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" name="sumatif" value="Proyek"> Proyek</label>
-                                <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer"><input type="checkbox" id="tesTertulisCheck" name="sumatif" value="Tes Tertulis"> Tes Tertulis</label>
+                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="asesmen" value="Post-test / Ulangan Harian"> Post-test / Ulangan Harian</label>
+                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" name="asesmen" value="Ujian Sumatif Akhir (SAS / SAT)"> Ujian Sumatif Akhir</label>
+                                <label class="flex items-center gap-2 text-xs text-slate-700 cursor-pointer"><input type="checkbox" id="tesTertulisCheck" name="asesmen" value="Tes Tertulis Terstruktur"> Bentuk Tes Tertulis (Pilih Sub-jenis):</label>
+                                
                                 <div id="subAsesmen" class="hidden ml-5 space-y-1.5 border-l-2 border-slate-200 pl-3 pt-1">
-                                    <label class="flex items-center gap-1.5 text-xs text-slate-600"><input type="checkbox" id="optPG"> Pilihan Ganda</label>
-                                    <label class="flex items-center gap-1.5 text-xs text-slate-600"><input type="checkbox" id="optUraian"> Uraian</label>
+                                    <label class="flex items-center gap-1.5 text-xs text-slate-600"><input type="checkbox" id="optPG"> Objektif (Pilihan Ganda / Isian Singkat)</label>
+                                    <label class="flex items-center gap-1.5 text-xs text-slate-600"><input type="checkbox" id="optUraian"> Subjektif (Uraian / Essay)</label>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
 
@@ -269,8 +454,36 @@
         </section>
     </main>
 
+    <!-- Modal Pop-up Keterangan Dimensi -->
+    <div id="dimensiModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
+            <div class="bg-blue-600 p-4 flex justify-between items-center">
+                <h3 id="modalTitle" class="text-white font-bold text-lg">Judul Dimensi</h3>
+                <button onclick="closeModal()" class="text-blue-100 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <p id="modalDesc" class="text-slate-600 text-sm leading-relaxed text-justify">Deskripsi akan muncul di sini.</p>
+                <div class="mt-6 flex justify-end">
+                    <button onclick="closeModal()" class="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-200 transition-colors">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const DIMENSI_LIST = ["Beriman & Bertaqwa", "Berkebinekaan Global", "Bergotong Royong", "Mandiri", "Bernalar Kritis", "Kreatif"];
+        const DIMENSI_DATA = [
+            { nama: "Keimanan & Ketakwaan Tuhan YME", desc: "Menumbuhkan karakter religius, akhlak mulia, serta penghayatan nilai-nilai spiritual dalam kehidupan sehari-hari." },
+            { nama: "Kewargaan", desc: "Menjadi warga negara yang cinta tanah air, aktif, bertanggung jawab, menaati aturan sosial, serta menjunjung tinggi nilai-nilai Pancasila." },
+            { nama: "Penalaran Kritis", desc: "Kemampuan berpikir secara logis, analitis, objektif, dan reflektif dalam memecahkan masalah serta memproses informasi." },
+            { nama: "Kreativitas", desc: "Kemampuan mengembangkan gagasan atau ide baru yang inovatif, fleksibel, dan orisinal untuk menjawab tantangan zaman." },
+            { nama: "Kolaborasi", desc: "Kemampuan bekerja sama dan bergotong royong secara efektif dengan berbagai pihak di tengah keberagaman melalui pembagian peran yang jelas." },
+            { nama: "Kemandirian", desc: "Kemampuan mengambil keputusan, bertanggung jawab atas proses dan hasil belajar sendiri, serta bertindak tanpa bergantung pada orang lain." },
+            { nama: "Kesehatan", desc: "Menjaga kesehatan fisik agar tetap bugar dan prima, serta merawat keseimbangan kesehatan mental sebagai modal dasar berkarya." },
+            { nama: "Komunikasi", desc: "Kemampuan menyampaikan gagasan secara efektif, santun, dan bermakna kepada orang lain." }
+        ];
+
         const KELAS_MAP = {
             "TK": ["TK A", "TK B"],
             "SD/MI": ["Kelas 1", "Kelas 2", "Kelas 3", "Kelas 4", "Kelas 5", "Kelas 6"],
@@ -295,6 +508,17 @@
         const btnSaveApiKey = document.getElementById('btnSaveApiKey');
         const apiKeyStatus = document.getElementById('apiKeyStatus');
 
+        // Modal Logic
+        function showModal(title, desc) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerText = desc;
+            document.getElementById('dimensiModal').classList.remove('hidden');
+        }
+        function closeModal() {
+            document.getElementById('dimensiModal').classList.add('hidden');
+        }
+
+        // API Key Logic
         function checkSavedApiKey() {
             const savedKey = localStorage.getItem('gemini_rpp_api_key');
             if (savedKey) {
@@ -309,7 +533,6 @@
                 apiKeyStatus.innerHTML = `<span>Status: Belum disimpan di browser ini.</span>`;
             }
         }
-
         btnSaveApiKey.addEventListener('click', () => {
             const key = apiKeyInput.value.trim();
             if (!key) { alert("Masukkan API Key terlebih dahulu!"); return; }
@@ -317,26 +540,56 @@
             checkSavedApiKey();
             alert("API Key berhasil disimpan!");
         });
-
         checkSavedApiKey();
 
-        DIMENSI_LIST.forEach((d, i) => {
+        // Render Dimensi Profil
+        DIMENSI_DATA.forEach((d, i) => {
             const div = document.createElement('div');
-            div.innerHTML = `<input type="checkbox" id="dim-${i}" class="pill-checkbox hidden" value="${d}">
-                             <label for="dim-${i}" class="px-3 py-1.5 rounded-full border border-slate-200 text-[11px] text-slate-600 cursor-pointer hover:bg-slate-50 transition-all font-medium">${d}</label>`;
+            div.className = "flex items-center bg-white border border-slate-200 rounded-full pr-1 overflow-hidden";
+            
+            div.innerHTML = `
+                <input type="checkbox" id="dim-${i}" class="pill-checkbox hidden" value="${d.nama}">
+                <label for="dim-${i}" class="px-3 py-1.5 text-[11px] text-slate-600 cursor-pointer hover:bg-slate-50 transition-all font-medium border-r border-slate-100 flex-1">
+                    ${d.nama}
+                </label>
+                <button type="button" onclick="showModal('${d.nama}', '${d.desc}')" class="px-2 py-1.5 text-blue-500 hover:text-blue-700 hover:bg-blue-50 transition-colors" title="Lihat Keterangan">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </button>
+            `;
             dimensiContainer.appendChild(div);
         });
 
-        const pills = document.querySelectorAll('.pill-checkbox');
-        pills.forEach(p => {
-            p.addEventListener('change', () => {
+        // Limit Checkbox 3 untuk Dimensi
+        dimensiContainer.addEventListener('change', (e) => {
+            if(e.target.classList.contains('pill-checkbox')) {
+                const pills = document.querySelectorAll('.pill-checkbox');
                 const checked = document.querySelectorAll('.pill-checkbox:checked');
                 document.getElementById('dimensi-count').innerText = `Dipilih: ${checked.length}/3`;
-                if(checked.length >= 3) pills.forEach(cb => { if(!cb.checked) cb.disabled = true; });
-                else pills.forEach(cb => cb.disabled = false);
-            });
+                
+                if(checked.length >= 3) {
+                    pills.forEach(cb => { if(!cb.checked) cb.disabled = true; });
+                } else {
+                    pills.forEach(cb => cb.disabled = false);
+                }
+            }
         });
 
+        // Limit Checkbox 3 untuk Strategi Pembelajaran
+        document.getElementById('strategi-container').addEventListener('change', (e) => {
+            if(e.target.classList.contains('str-checkbox')) {
+                const strPills = document.querySelectorAll('.str-checkbox');
+                const strChecked = document.querySelectorAll('.str-checkbox:checked');
+                document.getElementById('strategi-count').innerText = `Dipilih: ${strChecked.length}/3`;
+                
+                if(strChecked.length >= 3) {
+                    strPills.forEach(cb => { if(!cb.checked) cb.disabled = true; });
+                } else {
+                    strPills.forEach(cb => cb.disabled = false);
+                }
+            }
+        });
+
+        // Dropdowns Logic
         jenjangEl.addEventListener('change', () => {
             kelasEl.innerHTML = '<option value="" selected disabled>Pilih Kelas...</option>';
             KELAS_MAP[jenjangEl.value].forEach(k => {
@@ -355,13 +608,24 @@
             document.getElementById('subAsesmen').classList.toggle('hidden', !e.target.checked);
         });
 
-        // --- GENERATE RPP VIA API DENGAN STRUKTUR LENGKAP & DETAIL ---
+        // --- GENERATE RPP VIA API ---
         document.getElementById('btnGenerate').addEventListener('click', async () => {
             const form = document.getElementById('rppForm');
             if(!form.reportValidity()) return;
 
             const apiKey = apiKeyInput.value.trim();
             if(!apiKey) { alert("Masukkan dan Simpan API Key terlebih dahulu!"); return; }
+
+            const selectedKarakteristik = Array.from(document.querySelectorAll('input[name="karakteristik"]:checked')).map(c => c.value);
+            const selectedStrategi = Array.from(document.querySelectorAll('input[name="strategi"]:checked')).map(c => c.value);
+            const selectedAsesmen = Array.from(document.querySelectorAll('input[name="asesmen"]:checked')).map(c => c.value);
+
+            if(selectedKarakteristik.length === 0) {
+                alert("Pilih minimal 1 Karakteristik Peserta Didik!"); return;
+            }
+            if(selectedStrategi.length === 0) {
+                alert("Pilih minimal 1 Strategi Pembelajaran!"); return;
+            }
 
             const data = {
                 namaSekolah: document.getElementById('namaSekolah').value,
@@ -373,14 +637,15 @@
                 semester: document.getElementById('semester').value,
                 mapel: document.getElementById('mapel').value,
                 cp: document.getElementById('cp').value,
+                tp: document.getElementById('tp').value,
                 topik: document.getElementById('topik').value,
-                karakteristik: document.getElementById('karakteristik').value,
+                karakteristik: selectedKarakteristik.join(", "),
                 dimensi: Array.from(document.querySelectorAll('.pill-checkbox:checked')).map(c => c.value).join(", "),
                 jmlPertemuan: document.getElementById('jmlPertemuan').value,
                 jp: document.getElementById('jpPerPertemuan').value,
                 model: document.getElementById('modelBelajar').value === 'Lainnya' ? document.getElementById('modelLainnya').value : document.getElementById('modelBelajar').value,
-                formatif: Array.from(document.querySelectorAll('input[name="formatif"]:checked')).map(c => c.value).join(", "),
-                sumatif: Array.from(document.querySelectorAll('input[name="sumatif"]:checked')).map(c => c.value).join(", "),
+                strategi: selectedStrategi.join(", "),
+                daftarAsesmen: selectedAsesmen.join(", "),
                 adaPG: document.getElementById('optPG').checked,
                 adaUraian: document.getElementById('optUraian').checked
             };
@@ -390,36 +655,38 @@
             btn.innerHTML = '<div class="loader"></div> MENYUSUN RPP LENGKAP DENGAN AI...';
             btn.disabled = true;
 
-            const prompt = `Anda adalah seorang pakar penyusun Kurikulum Merdeka dan Pendidik profesional. 
-            Buatkan dokumen Rencana Pelaksanaan Pembelajaran (RPP) / Modul Ajar Deep Learning yang **SANGAT LENGKAP, UTUH, DAN DETAIL** dalam format HTML mentah (raw HTML) berdasarkan data berikut:
+            const prompt = `Anda adalah seorang Pakar Kurikulum Nasional (Kurikulum Merdeka) dan Instruktur Pedagogik berdedikasi tinggi. 
+            Tugas Anda adalah merancang dokumen Rencana Pelaksanaan Pembelajaran (RPP) / Modul Ajar berpendekatan *Deep Learning* yang **SANGAT LENGKAP, UTUH, DETAIL, DAN SIAP CETAK** dalam format HTML mentah (raw HTML).
+
+            DATA KONFIGURASI GURU:
             ${JSON.stringify(data)}
             
-            ATURAN STRUKTUR & KELENGKAPAN OUTPUT:
-            1. Output WAJIB berupa tag HTML mentah saja (tanpa text pengantar, dan TANPA dibungkus markdown \`\`\`html). Langsung mulai dengan tag kontainer <div> atau <article>.
-            2. Gunakan styling class Tailwind CSS atau inline style yang rapi, profesional, dan bersih.
-            3. STRUKTUR DOKUMEN RPP WAJIB MEMUAT:
-               - **Header Dokumen:** Judul resmi Rencana Pelaksanaan Pembelajaran (RPP) Kurikulum Merdeka, cantumkan Nama Sekolah: "${data.namaSekolah}", Jenjang: "${data.jenjang}", Kelas/Fase: "${data.kelas} / ${data.fase}", Mata Pelajaran: "${data.mapel}", Semester: "${data.semester}", Alokasi Waktu: "${data.jmlPertemuan} Pertemuan x ${data.jp}".
-               - **A. IDENTIFIKASI:** 
-                 1. Karakteristik Peserta Didik (Uraikan mendalam berdasarkan input: "${data.karakteristik}").
-                 2. Analisis Mata Pelajaran & Topik "${data.topik}".
-                 3. Dimensi Profil Lulusan yang dipilih: "${data.dimensi}".
-               - **B. DESAIN PEMBELAJARAN:** 
-                 1. Tujuan Pembelajaran (TP) yang diturunkan dari Capaian Pembelajaran: "${data.cp}".
-                 2. Praktik Pedagogis (Sintaks model pembelajaran "${data.model}").
-                 3. Lingkungan Belajar dan Kemitraan Digital.
-               - **C. PENGALAMAN BELAJAR (SKENARIO PERTEMUAN):** 
-                 - Jabarkan secara rinci dari Pertemuan 1 sampai Pertemuan ${data.jmlPertemuan}.
-                 - Setiap pertemuan wajib memuat: 
-                   * Pendahuluan (Apersepsi, Pertanyaan Pemantik, Motivasi).
-                   * Kegiatan Inti (Penerapan sintaks model "${data.model}" terintegrasi fase Deep Learning: Eksplorasi, Elaborasi/Deepening, Konfirmasi/Applying).
-                   * Penutup (Refleksi pembelajaran, kesimpulan, penugasan).
-               - **D. ASESMEN & LAMPIRAN:**
-                 1. Rincian Asesmen Formatif ("${data.formatif}") dan Sumatif ("${data.sumatif}").
-                 2. Jika Tes Tertulis dicentang, buatkan contoh soal Pilihan Ganda dan/atau Uraian lengkap dengan kunci jawaban.
-                 3. Rubrik Penilaian Kualitas (Skala 1 - 4).
-                 4. Lampiran Lembar Kerja Peserta Didik (LKPD) lengkap untuk setiap pertemuan beserta instruksi kerja dan tabel pengamatan.
-               - **Tanda Tangan Pengesahan di Bagian Bawah:** Sediakan tempat tanda tangan Kepala Sekolah dan Guru Penyusun yang mencantumkan nama asli **"${data.namaGuru}"** beserta NIP **"${data.nipGuru}"**.
-            4. Gunakan bahasa Indonesia yang baik, benar, baku, edukatif, dan sangat profesional.`;
+            ATURAN STRUKTUR & TAMPILAN (SANGAT KRUSIAL):
+            1. FORMAT OUTPUT: WAJIB hanya kode HTML mentah (dimulai dari <div>). JANGAN gunakan markdown \`\`\`html. JANGAN ada kalimat pembuka/penutup.
+            2. DESAIN UI & TABEL: Gunakan class Tailwind CSS (seperti border-collapse, border-slate-300, bg-slate-50, text-center, w-full, p-2) untuk membuat tabel Rubrik dan LKPD yang sangat rapi dan estetik.
+            3. PEMISAH HALAMAN: Gunakan <div class="page-break pt-8"></div> sebelum bagian Asesmen dan sebelum bagian Lampiran LKPD agar rapi saat dicetak.
+            
+            STRUKTUR KONTEN RPP WAJIB:
+            - KOP DOKUMEN: Judul "MODUL AJAR / RPP KURIKULUM MERDEKA", Nama Sekolah: "${data.namaSekolah}", Jenjang: "${data.jenjang}", Kelas/Fase: "${data.kelas} / ${data.fase}", Mata Pelajaran: "${data.mapel}", Semester: "${data.semester}", Alokasi Waktu: "${data.jmlPertemuan} Pertemuan x ${data.jp}".
+            - A. IDENTIFIKASI PEMBELAJARAN: 
+              1. Karakteristik Peserta Didik (Narasikan secara analitis dari data: "${data.karakteristik}").
+              2. Analisis Materi "${data.topik}".
+              3. Dimensi Profil Pelajar Pancasila ("${data.dimensi}").
+            - B. DESAIN PEMBELAJARAN: 
+              1. Tujuan Pembelajaran (TP): "${data.tp}" (pastikan selaras dengan CP: "${data.cp}").
+              2. Strategi & Model: Jelaskan integrasi sintaks model "${data.model}" dengan strategi "${data.strategi}".
+              3. Lingkungan Belajar & Media Pendukung.
+            - C. SKENARIO PENGALAMAN BELAJAR (WAJIB DIPISAH PER PERTEMUAN): 
+              - Buat sub-judul untuk Pertemuan 1 hingga Pertemuan ${data.jmlPertemuan}. JANGAN DIGABUNG.
+              - Tiap pertemuan memuat Alokasi Waktu, Pendahuluan, Kegiatan Inti (Penerapan model dan strategi dengan fase Deep Learning: Eksplorasi/Connecting, Elaborasi/Deepening, Konfirmasi/Applying), dan Penutup.
+            - D. ASESMEN & EVALUASI:
+              1. Penjabaran dari strategi asesmen yang dipilih: "${data.daftarAsesmen}".
+              2. Jika ada asesmen tertulis (PG/Uraian), WAJIB buatkan kotak berisi 3 contoh butir soal HOTS beserta kunci jawabannya.
+              3. Rubrik Penilaian (Skala 1 - 4) dalam bentuk tabel HTML.
+            - TANDA TANGAN PENGESAHAN: Format rapi rata kanan-kiri untuk Kepala Sekolah dan Guru Penyusun ("${data.namaGuru}" / NIP: "${data.nipGuru}").
+            - LAMPIRAN LKPD: Buatkan Lembar Kerja Peserta Didik (LKPD) yang menarik. Berisi petunjuk, narasi studi kasus/stimulus (disesuaikan dengan "${data.topik}"), dan tabel pengamatan/ruang jawaban.
+
+            Gunakan bahasa Indonesia yang baku, akademis, sistematis, dan praktis diaplikasikan oleh guru di kelas nyata.`;
 
             const modelsList = ['gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest'];
             let response = null;
